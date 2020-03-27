@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1585297656 source:d:\code\deeplearninguniformed\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<string.h>
+
