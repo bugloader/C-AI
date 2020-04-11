@@ -5,9 +5,9 @@
 
 #define INPUT_NUM 121
 #define HIDDEN_LAYER_NUM 2
-#define HIDDEN_LAYER_SIZE 36
+#define HIDDEN_LAYER_SIZE 30
 #define OUTPUT_NUM 10
-#define LEARNING_RATE 0.401
+#define LEARNING_RATE 0.0001
 
 double preferredOutput[OUTPUT_NUM];
 
@@ -160,10 +160,11 @@ struct BPData backPropagation()
         for(int j=0; j<HIDDEN_LAYER_SIZE; j++)
         {
             data.dCOutputWeight[i][j] =
-                data.dCOutputBIAS[i] * hiddenLayers[HIDDEN_LAYER_NUM-2][j].value;
+            data.dCOutputBIAS[i] * hiddenLayers[HIDDEN_LAYER_NUM-2][j].value;
             data.dCHiddenBIAS[HIDDEN_LAYER_NUM-1][j] += data.dCOutputBIAS[i] * outputLayer[i].weight[j]
-                    * hiddenLayers[HIDDEN_LAYER_NUM-2][j].value * (1-hiddenLayers[HIDDEN_LAYER_NUM-2][j].value);
-        }
+             * hiddenLayers[HIDDEN_LAYER_NUM-2][j].value * (1-hiddenLayers[HIDDEN_LAYER_NUM-2][j].value);
+
+        printf("%lf\n",data.dCOutputWeight[i][j]);}
     }
     for(int i=HIDDEN_LAYER_NUM-2; i>0; i--)
     {
@@ -173,20 +174,20 @@ struct BPData backPropagation()
             {
                 data.dCHiddenRestWeight[i-1][j][k] = data.dCHiddenBIAS[i][j] * hiddenLayers[i-1][k].value;
                 data.dCHiddenBIAS[i-1][k] += data.dCHiddenBIAS[i][j] * hiddenLayers[i][j].weight[k]
-                                             * hiddenLayers[i-1][k].value * (1-hiddenLayers[i-1][k].value);
+                * hiddenLayers[i-1][k].value * (1-hiddenLayers[i-1][k].value);
             }
         }
     }
-    for(int i=0; i<HIDDEN_LAYER_SIZE; i++)
+    for(int i=0;i<HIDDEN_LAYER_SIZE;i++)
     {
         for(int j=0; j<HIDDEN_LAYER_SIZE; j++)
         {
             data.dCHiddenRestWeight[0][i][j] = data.dCHiddenBIAS[1][i] * firstHiddenLayer[j].value;
             data.dCHiddenBIAS[0][j] += data.dCHiddenBIAS[1][i] * hiddenLayers[0][i].weight[j]
-                                       * firstHiddenLayer[j].value * (1-firstHiddenLayer[j].value);
+            * firstHiddenLayer[j].value * (1-firstHiddenLayer[j].value);
         }
     }
-    for(int i=0; i<HIDDEN_LAYER_SIZE; i++)
+    for(int i=0;i<HIDDEN_LAYER_SIZE;i++)
     {
         for(int j=0; j<INPUT_NUM; j++)
         {
@@ -195,30 +196,15 @@ struct BPData backPropagation()
     }
     return data;
 }
-double correct,count;
+
 void learn(int dataNum,struct Sample *pics)
 {
     struct BPData total,temp;
-    double max=0;
-    int index=0;
     memset(&total,0x00,sizeof(total));
     for(int n=0; n<dataNum; n++)
     {
         feedForward(pics[n]);
         temp = backPropagation();
-        for(int i=0; i<OUTPUT_NUM; i++)
-        {
-            if(outputLayer[i].value>max)
-            {
-                index=i;
-                max=outputLayer[i].value;
-            }
-        }
-        count++;
-        if(preferredOutput[index]==1)
-        {
-            correct+=1;
-        }
         for(int i=0; i<HIDDEN_LAYER_NUM; i++)
         {
             for(int j=0; j<HIDDEN_LAYER_SIZE; j++)
@@ -338,6 +324,7 @@ struct Sample pic[1190],tempPic;
 int main()
 {
     int m,n,tempi;
+    double avgC=0;
     srand((unsigned)time(NULL));
     initialize();
     for(int i=0; i<1190; i++)
@@ -349,20 +336,13 @@ int main()
     {
         for(int i=0; i<m; i++)
         {
-            tempi = rand()%(1190-m)+m-1;
+            tempi = rand()%(1190-m)+m;
             tempPic = pic[i];
             pic[i] = pic[tempi];
             pic[tempi] = tempPic;
         }
-        if(!(t%100000))
-        {
-            printSample(pic[0]);
-            test(pic[0]);
-            printf("Correctness:%.10f\n",(correct/count));
-            correct=0;
-            count=0;
-        }
         learn(m,pic);
+        test(pic[rand()%1190]);
     }
     return 0;
 }

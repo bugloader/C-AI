@@ -7,7 +7,7 @@
 #define HIDDEN_LAYER_NUM 2
 #define HIDDEN_LAYER_SIZE 36
 #define OUTPUT_NUM 10
-#define LEARNING_RATE 0.401
+#define LEARNING_RATE 0.4
 
 double preferredOutput[OUTPUT_NUM];
 
@@ -53,7 +53,7 @@ struct BPData
 
 double logistic(double rawValue)
 {
-    return 1/(1+pow(2.89,-rawValue));
+    return 1/(1+pow(2.718,-rawValue));
 }
 
 void initialize()
