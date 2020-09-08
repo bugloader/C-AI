@@ -4,10 +4,10 @@
 #include <string.h>
 
 #define INPUT_NUM 121
-#define HIDDEN_LAYER_NUM 2
+#define HIDDEN_LAYER_NUM 3
 #define HIDDEN_LAYER_SIZE 36
 #define OUTPUT_NUM 10
-#define LEARNING_RATE 0.401
+#define LEARNING_RATE 0.4
 
 double preferredOutput[OUTPUT_NUM];
 
@@ -53,7 +53,7 @@ struct BPData
 
 double logistic(double rawValue)
 {
-    return 1/(1+pow(2.89,-rawValue));
+    return 1/(1+pow(2.718,-rawValue));
 }
 
 void initialize()
@@ -171,8 +171,8 @@ struct BPData backPropagation()
         {
             for(int k=0; k<HIDDEN_LAYER_SIZE; k++)
             {
-                data.dCHiddenRestWeight[i-1][j][k] = data.dCHiddenBIAS[i][j] * hiddenLayers[i-1][k].value;
-                data.dCHiddenBIAS[i-1][k] += data.dCHiddenBIAS[i][j] * hiddenLayers[i][j].weight[k]
+                data.dCHiddenRestWeight[i][j][k] = data.dCHiddenBIAS[i+1][j] * hiddenLayers[i-1][k].value;
+                data.dCHiddenBIAS[i][k] += data.dCHiddenBIAS[i+1][j] * hiddenLayers[i][j].weight[k]
                                              * hiddenLayers[i-1][k].value * (1-hiddenLayers[i-1][k].value);
             }
         }
